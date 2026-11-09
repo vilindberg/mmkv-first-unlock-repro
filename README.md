@@ -60,3 +60,15 @@ and open the app. The console shows MMKV's
 | persisted | locked cold start | unlocked, read again | after trim() |
 |---|---|---|---|
 | ![](docs/1-persisted.png) | ![](docs/2-locked-cold-start.png) | ![](docs/3-unlocked-read-again.png) | ![](docs/4-after-trim.png) |
+
+## Native log from the run above
+
+```
+[E] <MemoryFile.cpp:100::open> fail to open [.../Documents/mmkv/repro], flag 0x7, 13(Permission denied)
+[E] <MemoryFile.cpp:100::open> fail to open [.../Documents/mmkv/repro.crc], flag 0x7, 13(Permission denied)
+[E] <MMKV_IO.cpp:250::loadMetaInfoAndCheck> file [.../Documents/mmkv/repro.crc] not valid
+[E] <MMKV_IO.cpp:87::loadFromFile> file [.../Documents/mmkv/repro] not valid
+[W] <MMKV_IO.cpp:474::ensureMemorySize> [repro] file not valid       <- every set()
+[W] <MMKV_IO.cpp:1495::trim> [repro] file not valid
+[I] <MMKV.cpp:340::clearMemoryCache> clearMemoryCache [repro]        <- trim(); next access reopens
+```
