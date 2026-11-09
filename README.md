@@ -8,7 +8,7 @@ Minimal repro for an iOS failure mode in `react-native-mmkv` (4.3.2, MMKVCore 2.
 2. MMKV's files use `NSFileProtectionCompleteUntilFirstUserAuthentication` (MMKVCore forces that
    class in `tryResetFileProtection`), so `open()` fails with `EPERM`.
 3. `createMMKV()` still returns an instance. Every read returns `undefined`, every `set()` throws
-   `Failed to set value for key`.
+   `MMKV.set(...): Failed to set value for key "counter"!`.
 4. MMKVCore loads a file once per process (`m_needLoadFromFile` is cleared after the first attempt),
    so the instance never recovers after the unlock. The process stays "signed out" until it is killed.
 
@@ -54,3 +54,9 @@ Now "unlock" without restarting the app, as a real unlock does not restart it ei
 Start any Live Activity from the app, reboot the phone, do not unlock, wait a minute, then unlock
 and open the app. The console shows MMKV's
 `fail to open [...] 1(Operation not permitted)` followed by `file [...] not valid`.
+
+## Screenshots (iOS 27 simulator, react-native-mmkv 4.3.2, Expo SDK 58)
+
+| persisted | locked cold start | unlocked, read again | after trim() |
+|---|---|---|---|
+| ![](docs/1-persisted.png) | ![](docs/2-locked-cold-start.png) | ![](docs/3-unlocked-read-again.png) | ![](docs/4-after-trim.png) |
